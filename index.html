@@ -3,54 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>单词打卡复习 - 音标强化版</title>
+    <title>单词打卡复习 - 教师作业分享版</title>
     <style>
         :root { --primary: #4A90E2; --success: #2ECC71; --error: #E74C3C; --bg: #F5F7FA; --card: #FFFFFF; }
         body { font-family: -apple-system, sans-serif; background-color: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: var(--card); width: 90%; max-width: 450px; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .container { background: var(--card); width: 90%; max-width: 450px; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
         .screen { display: none; }
         .screen.active { display: block; }
-        textarea { width: 100%; height: 120px; padding: 10px; border: 2px solid #eee; border-radius: 10px; margin-bottom: 1rem; box-sizing: border-box; font-family: monospace; }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 50px; font-size: 1rem; cursor: pointer; width: 100%; margin: 5px 0; transition: 0.2s; }
+        textarea { width: 100%; height: 120px; padding: 10px; border: 2px solid #eee; border-radius: 10px; margin-bottom: 1rem; box-sizing: border-box; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 50px; font-size: 1rem; cursor: pointer; width: 100%; margin: 5px 0; }
         .btn-share { background: #9b59b6; }
-        .tile { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+        .tile { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; }
         .tile.wrong { background: var(--error); animation: shake 0.5s; }
         .tile.correct { background: var(--success); }
-        .answer-box { min-height: 50px; border-bottom: 2px solid var(--primary); margin: 15px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; padding-bottom: 5px; }
-        .letter-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 50px; }
-        .phonetic { color: var(--primary); font-size: 1.1rem; font-family: "Lucida Sans Unicode", sans-serif; margin-bottom: 10px; font-weight: 500; }
-        #shareResult { background: #f9f9f9; padding: 10px; font-size: 0.8rem; word-break: break-all; border: 1px dashed #ccc; margin-top: 10px; display: none; }
+        .answer-box { min-height: 50px; border-bottom: 2px solid var(--primary); margin: 20px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .letter-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        #shareResult { background: #f9f9f9; padding: 10px; font-size: 0.8rem; word-break: break-all; border: 1px dashed #ccc; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="setupScreen" class="screen active">
-        <h1>📝 布置音标作业</h1>
-        <p style="font-size: 0.8rem; color: #888;">格式：单词:音标:中文 (每行一个)</p>
-        <textarea id="wordInput" placeholder="apple:/ˈæpl/:苹果&#10;banana:/bəˈnɑːnə/:香蕉"></textarea>
-        <button class="btn" onclick="startGame()">开始复习</button>
-        <button class="btn btn-share" onclick="generateShareLink()">生成含音标的分享链接</button>
+        <h1>📝 布置作业</h1>
+        <textarea id="wordInput" placeholder="格式：单词:中文 (每行一个)"></textarea>
+        <button class="btn" onclick="startGame()">自己先测一遍</button>
+        <button class="btn btn-share" onclick="generateShareLink()">生成作业分享链接</button>
         <div id="shareResult"></div>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 15px;">提示：生成链接后发给家长，家长打开即可复习您布置的内容。</p>
     </div>
 
     <div id="gameScreen" class="screen">
-        <div id="progress" style="color: #999; font-size: 0.8rem;"></div>
-        <button class="btn" style="width:44px; height:44px; border-radius:50%; margin: 10px auto;" onclick="playAudio()">🔊</button>
-        
-        <div class="phonetic" id="phoneticDisplay"></div>
-        <div id="definitionDisplay" style="font-size: 1.4rem; margin-bottom: 20px; font-weight: bold; color: #333;"></div>
-
+        <div id="progress"></div>
+        <button class="btn" style="width:40px; border-radius:50%;" onclick="playAudio()">🔊</button>
+        <div id="definitionDisplay" style="font-size: 1.5rem; margin: 20px 0; font-weight: bold;"></div>
         <div class="answer-box" id="answerBox"></div>
         <div class="letter-pool" id="letterPool"></div>
-        <div id="feedback" style="height: 20px; margin-top: 10px; font-weight: bold;"></div>
+        <div id="feedback"></div>
     </div>
 
     <div id="resultScreen" class="screen">
         <h1>🎉 复习完成!</h1>
-        <p>太棒了，所有的单词都拼对啦！</p>
-        <button class="btn" onclick="location.href=location.origin + location.pathname">返回主页</button>
+        <button class="btn" onclick="location.href=location.pathname">回到主页</button>
     </div>
 </div>
 
@@ -60,58 +55,66 @@
     let userSpelling = [];
     let isProcessing = false;
 
-    // 页面加载自动读取分享链接
+    // --- 核心分享逻辑 ---
+
+    // 页面加载时检查 URL 是否带了作业数据
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('hw');
+        const encodedData = urlParams.get('hw'); // 'hw' 是 homework 的缩写
         if (encodedData) {
             try {
+                // 解码并加载作业
                 const decodedData = decodeURIComponent(atob(encodedData));
                 document.getElementById('wordInput').value = decodedData;
-                startGame();
-            } catch (e) { console.error("链接解析失败"); }
+                startGame(); // 自动开始
+            } catch (e) {
+                alert("作业链接似乎损坏了，请重新获取");
+            }
         }
     }
 
+    // 生成分享链接
     function generateShareLink() {
         const data = document.getElementById('wordInput').value.trim();
-        if (!data) return alert("请先输入内容");
+        if (!data) return alert("请先输入单词内容");
+        
+        // 使用 Base64 编码数据，避免特殊字符破坏 URL
         const encodedData = btoa(encodeURIComponent(data));
         const shareUrl = window.location.origin + window.location.pathname + "?hw=" + encodedData;
+        
         const resDiv = document.getElementById('shareResult');
         resDiv.style.display = "block";
-        resDiv.innerHTML = `<strong>作业链接已生成：</strong><br>${shareUrl}`;
-        navigator.clipboard.writeText(shareUrl).then(() => alert("链接已自动复制！"));
+        resDiv.innerHTML = `<strong>作业链接已生成：</strong><br>${shareUrl}<br><br><small>(复制此链接发给家长即可)</small>`;
+        
+        // 尝试自动复制
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert("链接已自动复制到剪贴板！");
+        });
     }
 
-    function parseInput(text) {
-        return text.trim().split('\n').map(line => {
-            const parts = line.split(/[:：]/);
-            if (parts.length >= 3) {
-                return { en: parts[0].trim().toLowerCase(), ph: parts[1].trim(), cn: parts[2].trim() };
-            } else if (parts.length === 2) {
-                return { en: parts[0].trim().toLowerCase(), ph: '', cn: parts[1].trim() };
-            }
-            return null;
-        }).filter(i => i);
-    }
+    // --- 游戏逻辑 (保持之前的优化) ---
 
     function startGame() {
         words = parseInput(document.getElementById('wordInput').value);
-        if (words.length === 0) return alert("输入格式有误，请参考：单词:音标:中文");
+        if (words.length === 0) return alert("内容格式不对哦");
         currentWordIndex = 0;
         showScreen('gameScreen');
         loadLevel();
+    }
+
+    function parseInput(text) {
+        return text.trim().split('\n').map(l => {
+            const [en, cn] = l.split(/[:：]/);
+            return en && cn ? { en: en.trim().toLowerCase(), cn: cn.trim() } : null;
+        }).filter(i => i);
     }
 
     function loadLevel() {
         isProcessing = false;
         userSpelling = [];
         const word = words[currentWordIndex];
-        document.getElementById('progress').innerText = `Progress: ${currentWordIndex + 1} / ${words.length}`;
-        document.getElementById('phoneticDisplay').innerText = word.ph; // 显示音标
+        document.getElementById('progress').innerText = `进度: ${currentWordIndex + 1}/${words.length}`;
         document.getElementById('definitionDisplay').innerText = word.cn;
-        document.getElementById('feedback').innerText = "";
         renderUI();
         playAudio();
     }
@@ -152,29 +155,23 @@
         const target = words[currentWordIndex].en;
         const isCorrect = userSpelling.join('') === target;
         const tiles = document.querySelectorAll('#answerBox .tile');
-        const fb = document.getElementById('feedback');
 
         if (isCorrect) {
-            fb.style.color = 'var(--success)';
-            fb.innerText = "Excellent!";
             tiles.forEach(t => t.classList.add('correct'));
             setTimeout(() => {
                 currentWordIndex++;
                 currentWordIndex < words.length ? loadLevel() : showScreen('resultScreen');
-            }, 1000);
+            }, 800);
         } else {
-            fb.style.color = 'var(--error)';
-            fb.innerText = "Try again!";
             tiles.forEach(t => t.classList.add('wrong'));
-            setTimeout(() => { userSpelling = []; isProcessing = false; fb.innerText = ""; renderUI(); }, 1200);
+            setTimeout(() => { userSpelling = []; isProcessing = false; renderUI(); }, 1000);
         }
     }
 
     function playAudio() {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(words[currentWordIndex].en);
-        u.lang = 'en-US'; 
-        window.speechSynthesis.speak(u);
+        u.lang = 'en-US'; window.speechSynthesis.speak(u);
     }
 
     function showScreen(id) {
